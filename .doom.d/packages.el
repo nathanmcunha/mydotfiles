@@ -50,3 +50,14 @@
 ;(unpin! t)
 (package! tree-sitter)
 (package! tree-sitter-langs)
+(package! undo-tree)
+(package! whitespace-cleanup-mode)
+;; in ~/.doom.d/packages.el
+(package! doom-snippets :ignore t)
+;; If you want to replace it with yasnippet's default snippets
+(package! yasnippet-snippets)
+(package! consult-flycheck)
+(package! consult-lsp)
+(package! consult-yasnippet)
+(package! affe)
+(package! whitespace-cleanup-mode)
