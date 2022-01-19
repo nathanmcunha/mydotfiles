@@ -59,5 +59,11 @@
 (package! consult-flycheck)
 (package! consult-lsp)
 (package! consult-yasnippet)
+(package! consult-company)
 (package! affe)
-(package! whitespace-cleanup-mode)
+(package! kaolin-themes)
+(package! rainbow-delimiters)
+(package! rainbow-mode)
+(package! corfu)
+
+(package! embark-consult)
