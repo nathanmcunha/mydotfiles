@@ -26,8 +26,10 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-;;(setq doom-theme 'kaolin-bubblegum)
-;;(setq doom-themes-treemacs-theme 'kaolin-treemacs-theme)
+(setq doom-theme 'kaolin-eclipse)
+(setq doom-themes-treemacs-theme 'doom-colors)
+
+
 ;;If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
@@ -35,11 +37,9 @@
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type 'relative)
-
 (setq x-select-enable-clipboard-manager nil)
-
-(global-auto-revert-mode t)
 (setq auto-revert-check-vc-info t)
+(global-auto-revert-mode t)
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -58,20 +58,37 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-(after! treemacs
-  (setq lsp-treemacs-sync-mode 1))
-
 (use-package! tree-sitter)
+(use-package! consult-flycheck)
+(use-package! consult-lsp)
+(use-package! consult-yasnippet)
+(use-package! consult-company)
+(use-package! affe)
+(use-package! whitespace-cleanup-mode)
 
 (global-tree-sitter-mode)
 (tree-sitter-require 'java)
 (global-tree-sitter-mode)
+
 (add-hook! 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
 
+(after! treemacs
+  (setq lsp-treemacs-sync-mode 1))
 (require 'lsp-java-boot)
-
 (global-undo-tree-mode)
-(setq treemacs-load-theme 'kaolin-treemacs-theme)
+
+(setq kaolin-themes-treemacs-hl-line t)
+
+;; When t, will display colored hl-line style instead monochrome.
+(setq kaolin-themes-hl-line-colored t)
+
+;; Enable distinct background for fringe and line numbers.
+(setq kaolin-themes-distinct-fringe t)
+;; Enable distinct colors for company popup scrollbar.
+(setq kaolin-themes-distinct-company-scrollbar t)
+
+;; Show git-gutter indicators as solid lines
+(setq kaolin-themes-git-gutter-solid t)
 
 (after! undo-tree
   (setq undo-tree-auto-save-history nil))
@@ -79,14 +96,10 @@
 (add-hook! 'rainbow-mode-hook
   (hl-line-mode (if rainbow-mode -1 +1)))
 
-(use-package! consult-flycheck)
-(use-package! consult-lsp)
-(use-package! consult-yasnippet)
-(use-package! consult-company)
-(use-package! affe)
-(consult-lsp-marginalia-mode)
+(add-hook! 'prog-mode-hook #'rainbow-delimiters-mode)
+(add-hook! 'prog-mode-hook 'rainbow-identifiers-mode)
 
-(use-package! whitespace-cleanup-mode)
+(consult-lsp-marginalia-mode)
 
 
 ;; Configure the display per command.
@@ -119,12 +132,7 @@
 (setq +format-with-lsp nil)
 (define-key lsp-mode-map [remap xref-find-apropos] #'consult-lsp-symbols)
 
-(use-package! kaolin-themes
-  :config
-  (load-theme 'kaolin-eclipse t)
-  (kaolin-treemacs-theme))
-
-;; vertico, orderlss, consult, marginalia, embark
+;;vertico, orderlss, consult, marginalia, embark
 (use-package! vertico
   :init
   (vertico-mode +1))
@@ -144,11 +152,14 @@
 
 (setq prefix-help-command #'embark-prefix-help-command)
 (define-key company-mode-map [remap completion-at-point] #'consult-company)
-
+(setq completion-in-region-function
+      (lambda (&rest args)
+        (apply (if vertico-mode
+                   #'consult-completion-in-region
+                 #'completion--in-region)
+               args)))
 
 (use-package embark
-  :ensure t
-
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
    ("C-;" . embark-dwim)        ;; good alternative: M-.
@@ -170,7 +181,6 @@
 
 ;; Consult users will also want the embark-consult package.
 (use-package embark-consult
-  :ensure t
   :after (embark consult)
   :demand t ; only necessary if you have the hook below
   ;; if you want to have consult previews as you move around an
@@ -184,7 +194,13 @@
       "l e" #'consult-flycheck)
 
 (map! :leader
+      (:prefix ("d". "Debug Utils"))
       :desc "Debug java aplication"
       "d j" #'dap-java-debug)
+(map! :leader
+      :desc "Dap Hydra"
+      "d h" #'dap-hydra)
 
-(map! "D" #'dap-ui-breakpoint-delete)
+(use-package! treemacs
+  :config
+  (set treemacs-indent-guide-style 'block))
