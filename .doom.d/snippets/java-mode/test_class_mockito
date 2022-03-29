@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: Java test mockito class template
+# key: mtc
+# --
+package `(+java-current-package)`;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.context.SpringBootTest;
+
+
+@RunWith(MockitoJUnitRunner.class)
+@SpringBootTest
+public class `(+java-current-class)` $1{
+    $0
+}

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: java_
+# key: py_
+# --
+#+begin_src java
+$0
+#+end_src
